@@ -1,0 +1,158 @@
+@font-face {
+  font-family: system;
+  font-style: normal;
+  font-weight: 300;
+  src: local(".SFNSText-Light"), local(".HelveticaNeueDeskInterface-Light"), local(".LucidaGrandeUI"), local("Ubuntu Light"), local("Segoe UI Light"), local("Roboto-Light"), local("DroidSans"), local("Tahoma");
+}
+@font-face {
+  font-family: system;
+  font-style: italic;
+  font-weight: 300;
+  src: local(".SFNSText-LightItalic"), local(".HelveticaNeueDeskInterface-Italic"), local(".LucidaGrandeUI"), local("Ubuntu Light Italic"), local("Segoe UI Light Italic"), local("Roboto-LightItalic"), local("DroidSans"), local("Tahoma");
+}
+@font-face {
+  font-family: system;
+  font-style: normal;
+  font-weight: 400;
+  src: local(".SFNSText-Regular"), local(".HelveticaNeueDeskInterface-Regular"), local(".LucidaGrandeUI"), local("Ubuntu"), local("Segoe UI"), local("Roboto-Regular"), local("DroidSans"), local("Tahoma");
+}
+@font-face {
+  font-family: system;
+  font-style: italic;
+  font-weight: 400;
+  src: local(".SFNSText-Italic"), local(".HelveticaNeueDeskInterface-Italic"), local(".LucidaGrandeUI"), local("Ubuntu Italic"), local("Segoe UI Italic"), local("Roboto-Italic"), local("DroidSans"), local("Tahoma");
+}
+@font-face {
+  font-family: system;
+  font-style: normal;
+  font-weight: 500;
+  src: local(".SFNSText-Medium"), local(".HelveticaNeueDeskInterface-MediumP4"), local(".LucidaGrandeUI"), local("Ubuntu Medium"), local("Segoe UI Semibold"), local("Roboto-Medium"), local("DroidSans-Bold"), local("Tahoma Bold");
+}
+@font-face {
+  font-family: system;
+  font-style: italic;
+  font-weight: 500;
+  src: local(".SFNSText-MediumItalic"), local(".HelveticaNeueDeskInterface-MediumItalicP4"), local(".LucidaGrandeUI"), local("Ubuntu Medium Italic"), local("Segoe UI Semibold Italic"), local("Roboto-MediumItalic"), local("DroidSans-Bold"), local("Tahoma Bold");
+}
+@font-face {
+  font-family: system;
+  font-style: normal;
+  font-weight: 700;
+  src: local(".SFNSText-Bold"), local(".HelveticaNeueDeskInterface-Bold"), local(".LucidaGrandeUI"), local("Ubuntu Bold"), local("Roboto-Bold"), local("DroidSans-Bold"), local("Segoe UI Bold"), local("Tahoma Bold");
+}
+@font-face {
+  font-family: system;
+  font-style: italic;
+  font-weight: 700;
+  src: local(".SFNSText-BoldItalic"), local(".HelveticaNeueDeskInterface-BoldItalic"), local(".LucidaGrandeUI"), local("Ubuntu Bold Italic"), local("Roboto-BoldItalic"), local("DroidSans-Bold"), local("Segoe UI Bold Italic"), local("Tahoma Bold");
+}
+*:not(input:not(input[type="submit"])) {
+  user-select: none;
+  -webkit-user-select: none;
+}
+* {
+  box-sizing: border-box;
+  font-family: -apple-system-body, system, Helvetica Neue, Helvetica;
+}
+body {
+  margin: 0;
+  color: #fff;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 300;
+}
+input {
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+.app {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #262626;
+}
+.no-activities {
+  width: 100%;
+  text-align: center;
+}
+.activity-list {
+  width: 95%;
+  margin: 20px auto 0;
+}
+.activity-list__activity {
+  margin: 10px 0;
+  padding: 30px;
+  background-color: #282c34;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 200;
+  animation-name: activity-enter;
+  animation-duration: 500ms;
+  animation-timing-function: cubic-bezier(0, 0, 0.22, 0.99);
+  animation-fill-mode: forwards;
+}
+.activity-list__activity--active {
+  padding: 50px 30px;
+}
+@-moz-keyframes activity-enter {
+  from {
+    transform: translate(0, 100px, 0);
+  }
+  to {
+    transform: translate(0, 0, 0);
+  }
+}
+@-webkit-keyframes activity-enter {
+  from {
+    transform: translate(0, 100px, 0);
+  }
+  to {
+    transform: translate(0, 0, 0);
+  }
+}
+@-o-keyframes activity-enter {
+  from {
+    transform: translate(0, 100px, 0);
+  }
+  to {
+    transform: translate(0, 0, 0);
+  }
+}
+@keyframes activity-enter {
+  from {
+    transform: translate(0, 100px, 0);
+  }
+  to {
+    transform: translate(0, 0, 0);
+  }
+}
+.new-activity {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+}
+.new-activity__form {
+  position: relative;
+  width: 95%;
+  margin: auto;
+}
+.new-activity__input {
+  outline: none;
+  padding: 10px;
+  background-color: #ddd;
+  border: 0;
+  font-size: 1.1rem;
+}
+.new-activity__name {
+  width: 70%;
+}
+.new-activity__submit {
+  background-color: #2c3e50;
+  color: #fff;
+  width: 30%;
+  font-weight: 200;
+}

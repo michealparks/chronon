@@ -1,0 +1,13 @@
+{
+  "presets": ["es2015"],
+  "plugins": ["transform-strict-mode", "inferno"],
+  "env": {
+    "development": {
+      "presets": [],
+      "plugins": []
+    },
+    "production": {
+      "presets": []
+    }
+  }
+}
