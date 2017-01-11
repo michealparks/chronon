@@ -7,6 +7,8 @@ function App (props) {
       <ActivityList
         activities={props.activities}
         activity={props.activity}
+        onActivityTouchStart={props.onActivityTouchStart}
+        onActivityTouchEnd={props.onActivityTouchEnd}
         onSelectActivity={props.onSelectActivity} />
       <NewActivity
         onCreateActivity={props.onCreateActivity} />

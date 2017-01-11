@@ -49,15 +49,23 @@
 	var _inferno = __webpack_require__(1);
 
 	var Inferno = __webpack_require__(1);
-	var App = __webpack_require__(3);
+	var App = __webpack_require__(2);
 	var onUpdate = __webpack_require__(5);
 	var element = document.getElementById('app');
 
-	onUpdate(function (state, handlers) {
+	document.addEventListener('touchmove', function (e) {
+	  e.preventDefault();
+	  return false;
+	});
+
+	onUpdate(function (state, shallowState, handlers) {
 	  return Inferno.render((0, _inferno.createVNode)(16, App, {
+	    'onActivityTouchStart': handlers.onActivityTouchStart,
+	    'onActivityTouchEnd': handlers.onActivityTouchEnd,
 	    'onSelectActivity': handlers.onSelectActivity,
 	    'onCreateActivity': handlers.onCreateActivity,
 	    'activity': state.activity,
+	    'editing': shallowState.editing,
 	    'activities': state.activities
 	  }), element);
 	});
@@ -70,16 +78,15 @@
 	module.exports.default = module.exports;
 
 /***/ },
-/* 2 */,
-/* 3 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _inferno = __webpack_require__(1);
 
-	var ActivityList = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./activity-list\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
-	var NewActivity = __webpack_require__(4);
+	var ActivityList = __webpack_require__(7);
+	var NewActivity = __webpack_require__(3);
 
 	function App(props) {
 	  return (0, _inferno.createVNode)(2, 'div', {
@@ -87,6 +94,8 @@
 	  }, [(0, _inferno.createVNode)(16, ActivityList, {
 	    'activities': props.activities,
 	    'activity': props.activity,
+	    'onActivityTouchStart': props.onActivityTouchStart,
+	    'onActivityTouchEnd': props.onActivityTouchEnd,
 	    'onSelectActivity': props.onSelectActivity
 	  }), (0, _inferno.createVNode)(16, NewActivity, {
 	    'onCreateActivity': props.onCreateActivity
@@ -96,7 +105,7 @@
 	module.exports = App;
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -132,24 +141,86 @@
 	module.exports = NewActivity;
 
 /***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	/* global localStorage */
+	var noStore = !storageAvailable('localStorage');
+	var stringify = JSON.stringify.bind(JSON);
+	var parse = JSON.parse.bind(JSON);
+	var g = (localStorage || { getItem: function getItem() {} }).getItem.bind(localStorage);
+	var s = (localStorage || { setItem: function setItem() {} }).setItem.bind(localStorage);
+
+	function storageAvailable(type) {
+	  try {
+	    var storage = window[type];
+	    var x = '__storage_test__';
+	    storage.setItem(x, x);
+	    storage.removeItem(x);
+	    return true;
+	  } catch (e) {
+	    return false;
+	  }
+	}
+
+	function get(key) {
+	  return noStore ? null : parse(g(key));
+	}
+
+	function set(key, val) {
+	  return noStore ? null : s(key, stringify(val));
+	}
+
+	module.exports = { get: get, set: set };
+
+/***/ },
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var storage = __webpack_require__(7);
+	var storage = __webpack_require__(4);
 
 	var renderFn = void 0;
+
 	var state = storage.get('state') || {
 	  activity: -1,
 	  activities: []
 	};
 
+	var shallowState = {
+	  editing: -1,
+	  activityTouchPoints: []
+	};
+
 	var handlers = {
-	  onSelectActivity: function onSelectActivity(e) {
-	    state.activity = parseInt(e.target.getAttribute('data-id'), 10);
-	    update();
+	  onActivityTouchStart: function onActivityTouchStart(e) {
+	    var index = parseInt(e.target.getAttribute('data-id'), 10);
+
+	    shallowState.activityTouchPoints[index] = [e.changedTouches[0].pageX, e.changedTouches[0].pageY];
 	  },
+	  onActivityTouchEnd: function onActivityTouchEnd(e) {
+	    var index = parseInt(e.target.getAttribute('data-id'), 10);
+	    var touchStart = shallowState.activityTouchPoints[index];
+
+	    console.log(Math.abs(touchStart[0] - e.changedTouches[0].pageX));
+	    console.log(Math.abs(touchStart[1] - e.changedTouches[0].pageY));
+	    if (Math.abs(touchStart[0] - e.changedTouches[0].pageX) < 20 && Math.abs(touchStart[1] - e.changedTouches[0].pageY) < 20) {
+	      state.activity = index === state.activity ? -1 : index;
+	      update();
+	    }
+	  },
+
+
+	  // onSelectActivity (e) {
+	  //   const index = parseInt(e.target.getAttribute('data-id'), 10)
+
+	  //   state.activity = (index === state.activity) ? -1 : index
+	  //   update()
+	  // },
+
 	  onCreateActivity: function onCreateActivity(e) {
 	    e.preventDefault();
 
@@ -163,8 +234,6 @@
 	    // Clear data
 	    e.target.elements.name.value = '';
 
-	    console.log(e);
-
 	    document.activeElement.blur();
 
 	    update();
@@ -173,7 +242,7 @@
 
 	function update() {
 	  storage.set('state', state);
-	  renderFn(state, handlers);
+	  renderFn(state, shallowState, handlers);
 	}
 
 	function onUpdate(fn) {
@@ -2767,38 +2836,40 @@
 
 /***/ },
 /* 7 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	/* global localStorage */
-	var noStore = !storageAvailable('localStorage');
-	var stringify = JSON.stringify.bind(JSON);
-	var parse = JSON.parse.bind(JSON);
-	var g = (localStorage || { getItem: function getItem() {} }).getItem.bind(localStorage);
-	var s = (localStorage || { setItem: function setItem() {} }).setItem.bind(localStorage);
+	var _inferno = __webpack_require__(1);
 
-	function storageAvailable(type) {
-	  try {
-	    var storage = window[type];
-	    var x = '__storage_test__';
-	    storage.setItem(x, x);
-	    storage.removeItem(x);
-	    return true;
-	  } catch (e) {
-	    return false;
+	function ActivityList(props) {
+	  if (!props.activities.length) {
+	    return (0, _inferno.createVNode)(2, 'div', {
+	      'className': 'no-activities'
+	    }, [(0, _inferno.createVNode)(2, 'h1', null, ':('), (0, _inferno.createVNode)(2, 'h2', null, 'No Activities Yet'), (0, _inferno.createVNode)(2, 'h4', null, 'Add one to get started')]);
 	  }
+
+	  return (0, _inferno.createVNode)(2, 'div', {
+	    'className': 'activity-list'
+	  }, props.activities.map(function (activity, i) {
+	    var cn = 'activity-list__activity';
+
+	    if (i === props.activity) {
+	      cn += ' activity-list__activity--active';
+	    }
+
+	    return (0, _inferno.createVNode)(2, 'div', {
+	      'data-id': i,
+	      'className': cn
+	    }, activity.name, {
+	      'onClick': props.onSelectActivity,
+	      'onTouchStart': props.onActivityTouchStart,
+	      'onTouchEnd': props.onActivityTouchEnd
+	    }, i);
+	  }));
 	}
 
-	function get(key) {
-	  return noStore ? null : parse(g(key));
-	}
-
-	function set(key, val) {
-	  return noStore ? null : s(key, stringify(val));
-	}
-
-	module.exports = { get: get, set: set };
+	module.exports = ActivityList;
 
 /***/ }
 /******/ ]);

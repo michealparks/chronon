@@ -9,14 +9,15 @@
 .activity-list__activity
   margin: 10px 0
   padding: 30px
-  background-color: #282C34
-  color: #fff
+  background-color: #3e3e3e
+  color: #ecf0f1
   font-size: 1.5rem
   font-weight: 200
   animation-name: activity-enter
   animation-duration: 500ms
   animation-timing-function: cubic-bezier(0, 0, 0.22, 0.99)
   animation-fill-mode: forwards
+  transition: padding 300ms cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 300ms
 
 @keyframes activity-enter
   from
@@ -26,3 +27,4 @@
 
 .activity-list__activity--active
   padding: 50px 30px
+  background-color: #646565

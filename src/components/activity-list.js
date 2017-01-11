@@ -12,14 +12,20 @@ function ActivityList (props) {
   return (
     <div className='activity-list'>
       {props.activities.map(function (activity, i) {
-        const cn = 'activity-list__activity'
-        if (i === props.activity) cn += ' activity-list__activity--active'
+        let cn = 'activity-list__activity'
+
+        if (i === props.activity) {
+          cn += ' activity-list__activity--active'
+        }
+
         return (
           <div
             key={i}
             data-id={i}
             className={cn}
-            onClick={props.onSelectActivity}>
+            onClick={props.onSelectActivity}
+            onTouchStart={props.onActivityTouchStart}
+            onTouchEnd={props.onActivityTouchEnd}>
             {activity.name}
           </div>
         )

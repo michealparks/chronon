@@ -1,8 +1,11 @@
 @import './styl/fonts'
 
-*:not(input:not(input[type="submit"]))
-  user-select: none
-  -webkit-user-select: none
+@css {
+  *:not(input:not(input[type="submit"])) {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
 
 *
   box-sizing: border-box
@@ -23,7 +26,7 @@ input
   position: absolute
   width: 100%
   height: 100%
-  background-color: #262626
+  background-color: #242424
 
 @import './styl/activity-list'
 @import './styl/new-activity'

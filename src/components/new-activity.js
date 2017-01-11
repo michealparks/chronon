@@ -5,7 +5,7 @@ function NewActivity (props) {
         onSubmit={props.onCreateActivity}
         className='new-activity__form'>
         <input
-          onTouchStart={e => {
+          onTouchStart={function (e) {
             e.target.focus()
             return false
           }}
