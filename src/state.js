@@ -4,7 +4,8 @@ let renderFn
 
 const state = storage.get('state') || {
   activity: -1,
-  activities: []
+  activities: [],
+  currentActivityStartTime: null
 }
 
 const shallowState = {
