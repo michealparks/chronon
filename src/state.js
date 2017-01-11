@@ -26,8 +26,6 @@ const handlers = {
     const index = parseInt(e.target.getAttribute('data-id'), 10)
     const touchStart = shallowState.activityTouchPoints[index]
 
-    console.log(Math.abs(touchStart[0] - e.changedTouches[0].pageX))
-    console.log(Math.abs(touchStart[1] - e.changedTouches[0].pageY))
     if (Math.abs(touchStart[0] - e.changedTouches[0].pageX) < 20 &&
         Math.abs(touchStart[1] - e.changedTouches[0].pageY) < 20) {
       state.activity = (index === state.activity) ? -1 : index
@@ -35,17 +33,13 @@ const handlers = {
     }
   },
 
-  // onSelectActivity (e) {
-  //   const index = parseInt(e.target.getAttribute('data-id'), 10)
-
-  //   state.activity = (index === state.activity) ? -1 : index
-  //   update()
-  // },
-
   onCreateActivity (e) {
     e.preventDefault()
 
-    if (e.target.elements.name.value === '') return
+    const name = e.target.elements.name.value
+
+    if (name === '') return
+    if (isDuplicateActivity(name)) return
 
     // Record data
     state.activities.push({
@@ -59,6 +53,14 @@ const handlers = {
 
     update()
   }
+}
+
+function isDuplicateActivity (name) {
+  for (let i = 0, l = state.activities.length; i < l; ++i) {
+    if (state.activities[i].name === name) return true
+  }
+
+  return false
 }
 
 function update () {

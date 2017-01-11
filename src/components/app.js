@@ -1,5 +1,4 @@
 const ActivityList = require('./activity-list')
-const NewActivity = require('./new-activity')
 
 function App (props) {
   return (
@@ -9,8 +8,6 @@ function App (props) {
         activity={props.activity}
         onActivityTouchStart={props.onActivityTouchStart}
         onActivityTouchEnd={props.onActivityTouchEnd}
-        onSelectActivity={props.onSelectActivity} />
-      <NewActivity
         onCreateActivity={props.onCreateActivity} />
     </div>
   )

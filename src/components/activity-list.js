@@ -1,16 +1,20 @@
-function ActivityList (props) {
-  if (!props.activities.length) {
-    return (
-      <div className='no-activities'>
-        <h1>:(</h1>
-        <h2>No Activities Yet</h2>
-        <h4>Add one to get started</h4>
-      </div>
-    )
-  }
+const NewActivity = require('./new-activity')
+const removeIOSRubberEffect = require('../scripts/remove-ios-rubber-effect')
 
+function ActivityList (props) {
   return (
-    <div className='activity-list'>
+    <div
+      className='activity-list'
+      onTouchStart={removeIOSRubberEffect}
+      onTouchMove={function (e) { e.stopPropagation() }}>
+      {!props.activities.length &&
+        <div className='no-activities'>
+          <h1>:(</h1>
+          <h2>No Activities Yet</h2>
+          <h4>Add one to get started!</h4>
+        </div>
+      }
+
       {props.activities.map(function (activity, i) {
         let cn = 'activity-list__activity'
 
@@ -23,13 +27,14 @@ function ActivityList (props) {
             key={i}
             data-id={i}
             className={cn}
-            onClick={props.onSelectActivity}
             onTouchStart={props.onActivityTouchStart}
             onTouchEnd={props.onActivityTouchEnd}>
             {activity.name}
           </div>
         )
       })}
+      <NewActivity
+        onCreateActivity={props.onCreateActivity} />
     </div>
   )
 }
