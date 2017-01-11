@@ -5,7 +5,6 @@ const element = document.getElementById('app')
 
 document.addEventListener('touchmove', function (e) {
   e.preventDefault()
-  return false
 })
 
 onUpdate(function (state, shallowState, handlers) {
@@ -13,7 +12,6 @@ onUpdate(function (state, shallowState, handlers) {
     <App
       onActivityTouchStart={handlers.onActivityTouchStart}
       onActivityTouchEnd={handlers.onActivityTouchEnd}
-      onSelectActivity={handlers.onSelectActivity}
       onCreateActivity={handlers.onCreateActivity}
       activity={state.activity}
       editing={shallowState.editing}

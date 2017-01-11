@@ -49,20 +49,18 @@
 	var _inferno = __webpack_require__(1);
 
 	var Inferno = __webpack_require__(1);
-	var App = __webpack_require__(2);
-	var onUpdate = __webpack_require__(5);
+	var App = __webpack_require__(3);
+	var onUpdate = __webpack_require__(6);
 	var element = document.getElementById('app');
 
 	document.addEventListener('touchmove', function (e) {
 	  e.preventDefault();
-	  return false;
 	});
 
 	onUpdate(function (state, shallowState, handlers) {
 	  return Inferno.render((0, _inferno.createVNode)(16, App, {
 	    'onActivityTouchStart': handlers.onActivityTouchStart,
 	    'onActivityTouchEnd': handlers.onActivityTouchEnd,
-	    'onSelectActivity': handlers.onSelectActivity,
 	    'onCreateActivity': handlers.onCreateActivity,
 	    'activity': state.activity,
 	    'editing': shallowState.editing,
@@ -74,7 +72,7 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(6);
+	module.exports = __webpack_require__(7);
 	module.exports.default = module.exports;
 
 /***/ },
@@ -85,27 +83,66 @@
 
 	var _inferno = __webpack_require__(1);
 
-	var ActivityList = __webpack_require__(7);
-	var NewActivity = __webpack_require__(3);
+	var NewActivity = __webpack_require__(4);
+	var removeIOSRubberEffect = __webpack_require__(8);
+
+	function ActivityList(props) {
+	  return (0, _inferno.createVNode)(2, 'div', {
+	    'className': 'activity-list'
+	  }, [!props.activities.length && (0, _inferno.createVNode)(2, 'div', {
+	    'className': 'no-activities'
+	  }, [(0, _inferno.createVNode)(2, 'h1', null, ':('), (0, _inferno.createVNode)(2, 'h2', null, 'No Activities Yet'), (0, _inferno.createVNode)(2, 'h4', null, 'Add one to get started!')]), props.activities.map(function (activity, i) {
+	    var cn = 'activity-list__activity';
+
+	    if (i === props.activity) {
+	      cn += ' activity-list__activity--active';
+	    }
+
+	    return (0, _inferno.createVNode)(2, 'div', {
+	      'data-id': i,
+	      'className': cn
+	    }, activity.name, {
+	      'onTouchStart': props.onActivityTouchStart,
+	      'onTouchEnd': props.onActivityTouchEnd
+	    }, i);
+	  }), (0, _inferno.createVNode)(16, NewActivity, {
+	    'onCreateActivity': props.onCreateActivity
+	  })], {
+	    'onTouchStart': removeIOSRubberEffect,
+	    'onTouchMove': function onTouchMove(e) {
+	      e.stopPropagation();
+	    }
+	  });
+	}
+
+	module.exports = ActivityList;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inferno = __webpack_require__(1);
+
+	var ActivityList = __webpack_require__(2);
 
 	function App(props) {
 	  return (0, _inferno.createVNode)(2, 'div', {
 	    'className': 'app'
-	  }, [(0, _inferno.createVNode)(16, ActivityList, {
+	  }, (0, _inferno.createVNode)(16, ActivityList, {
 	    'activities': props.activities,
 	    'activity': props.activity,
 	    'onActivityTouchStart': props.onActivityTouchStart,
 	    'onActivityTouchEnd': props.onActivityTouchEnd,
-	    'onSelectActivity': props.onSelectActivity
-	  }), (0, _inferno.createVNode)(16, NewActivity, {
 	    'onCreateActivity': props.onCreateActivity
-	  })]);
+	  }));
 	}
 
 	module.exports = App;
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -132,7 +169,7 @@
 	  }), (0, _inferno.createVNode)(512, 'input', {
 	    'className': 'new-activity__input new-activity__submit',
 	    'type': 'submit',
-	    'value': 'Add'
+	    'value': '+'
 	  })], {
 	    'onSubmit': props.onCreateActivity
 	  }));
@@ -141,7 +178,7 @@
 	module.exports = NewActivity;
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -176,12 +213,12 @@
 	module.exports = { get: get, set: set };
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var storage = __webpack_require__(4);
+	var storage = __webpack_require__(5);
 
 	var renderFn = void 0;
 
@@ -205,26 +242,18 @@
 	    var index = parseInt(e.target.getAttribute('data-id'), 10);
 	    var touchStart = shallowState.activityTouchPoints[index];
 
-	    console.log(Math.abs(touchStart[0] - e.changedTouches[0].pageX));
-	    console.log(Math.abs(touchStart[1] - e.changedTouches[0].pageY));
 	    if (Math.abs(touchStart[0] - e.changedTouches[0].pageX) < 20 && Math.abs(touchStart[1] - e.changedTouches[0].pageY) < 20) {
 	      state.activity = index === state.activity ? -1 : index;
 	      update();
 	    }
 	  },
-
-
-	  // onSelectActivity (e) {
-	  //   const index = parseInt(e.target.getAttribute('data-id'), 10)
-
-	  //   state.activity = (index === state.activity) ? -1 : index
-	  //   update()
-	  // },
-
 	  onCreateActivity: function onCreateActivity(e) {
 	    e.preventDefault();
 
-	    if (e.target.elements.name.value === '') return;
+	    var name = e.target.elements.name.value;
+
+	    if (name === '') return;
+	    if (isDuplicateActivity(name)) return;
 
 	    // Record data
 	    state.activities.push({
@@ -240,6 +269,14 @@
 	  }
 	};
 
+	function isDuplicateActivity(name) {
+	  for (var i = 0, l = state.activities.length; i < l; ++i) {
+	    if (state.activities[i].name === name) return true;
+	  }
+
+	  return false;
+	}
+
 	function update() {
 	  storage.set('state', state);
 	  renderFn(state, shallowState, handlers);
@@ -253,7 +290,7 @@
 	module.exports = onUpdate;
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -2835,41 +2872,22 @@
 
 
 /***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/* 8 */
+/***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 
-	var _inferno = __webpack_require__(1);
-
-	function ActivityList(props) {
-	  if (!props.activities.length) {
-	    return (0, _inferno.createVNode)(2, 'div', {
-	      'className': 'no-activities'
-	    }, [(0, _inferno.createVNode)(2, 'h1', null, ':('), (0, _inferno.createVNode)(2, 'h2', null, 'No Activities Yet'), (0, _inferno.createVNode)(2, 'h4', null, 'Add one to get started')]);
+	// Apply this to ontouchstsart events
+	function removeIOSRubberEffect(e) {
+	  var el = e.currentTarget;
+	  if (el.scrollTop === 0) {
+	    el.scrollTop = 1;
+	  } else if (el.scrollTop + el.offsetHeight === el.scrollHeight) {
+	    el.scrollTop = el.scrollTop - 1;
 	  }
-
-	  return (0, _inferno.createVNode)(2, 'div', {
-	    'className': 'activity-list'
-	  }, props.activities.map(function (activity, i) {
-	    var cn = 'activity-list__activity';
-
-	    if (i === props.activity) {
-	      cn += ' activity-list__activity--active';
-	    }
-
-	    return (0, _inferno.createVNode)(2, 'div', {
-	      'data-id': i,
-	      'className': cn
-	    }, activity.name, {
-	      'onClick': props.onSelectActivity,
-	      'onTouchStart': props.onActivityTouchStart,
-	      'onTouchEnd': props.onActivityTouchEnd
-	    }, i);
-	  }));
 	}
 
-	module.exports = ActivityList;
+	module.exports = removeIOSRubberEffect;
 
 /***/ }
 /******/ ]);

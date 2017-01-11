@@ -18,7 +18,7 @@ function NewActivity (props) {
         <input
           className='new-activity__input new-activity__submit'
           type='submit'
-          value='Add' />
+          value='+' />
       </form>
     </div>
   )
