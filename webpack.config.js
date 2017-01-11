@@ -1,7 +1,6 @@
 const path = require('path')
 const validate = require('webpack-validator')
 const webpack = require('webpack')
-const BabiliPlugin = require('babili-webpack-plugin')
 const { version } = require('./package.json')
 
 module.exports = validate({
@@ -30,5 +29,10 @@ module.exports = validate({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       VERSION: `v${version}`
     })
-  ].concat(process.env.NODE_ENV === 'production' ? new BabiliPlugin() : [])
+  ].concat(process.env.NODE_ENV === 'production'
+    ? new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    }) : [])
 })
